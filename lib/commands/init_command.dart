@@ -4,6 +4,7 @@ import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 import 'package:ansicolor/ansicolor.dart';
+import 'feature_command.dart'; // Import the FeatureCommand class
 
 class InitCommand extends Command {
   @override
@@ -42,7 +43,7 @@ class InitCommand extends Command {
         exit(1);
       }
 
-      print('🚀 Initializing BlocX in ${path.absolute(projectDir)}');
+      print('🚀 Initializing BlocY in ${path.absolute(projectDir)}');
 
       // Add dependencies
       await addDependencies(projectDir);
@@ -53,11 +54,34 @@ class InitCommand extends Command {
       // Create basic files
       createBaseFiles(projectDir);
 
-      printSuccess('✅ BlocX initialization complete!');
+      printSuccess('✅ BlocY initialization complete!');
+
+      // Generate home feature automatically
+      print('\n🏠 Creating home feature...');
+      updateTestFiles(projectDir);
+      await createHomeFeature(projectDir);
+
       print('\nRun "flutter pub get" to install the new dependencies.');
     } catch (e) {
-      printError('Failed to initialize BlocX: $e');
+      printError('Failed to initialize BlocY: $e');
       exit(1);
+    }
+  }
+
+  Future<void> createHomeFeature(String projectDir) async {
+    try {
+      // Create a command runner specifically for the feature command
+      final featureCommand = FeatureCommand();
+
+      // Create a command runner
+      final runner = CommandRunner('blocy', 'BLoC CLI')
+        ..addCommand(featureCommand);
+
+      // Run the feature command with home argument
+      await runner.run(['feature', 'home', '--project-dir', projectDir]);
+    } catch (e) {
+      printWarning('Could not create home feature automatically: $e');
+      printWarning('You can manually create it by running: blocy feature home');
     }
   }
 
@@ -248,7 +272,7 @@ class AppTheme {
     final mainFile = File(path.join(libDir, 'main.dart'));
     if (mainFile.existsSync()) {
       mainFile.writeAsStringSync('''
-import 'package:blocx_test/app.dart';
+import 'app.dart';
 import 'package:flutter/material.dart';
 import 'core/dependency_injection/injection_container.dart' as di;
 
@@ -260,33 +284,59 @@ void main() async {
 ''');
     }
 
-    // Update main.dart file
+    // Create app.dart file (not checking if exists)
     final appFile = File(path.join(libDir, 'app.dart'));
-    if (appFile.existsSync()) {
-      appFile.writeAsStringSync('''
-import 'package:blocx_test/core/themes/app_theme.dart';
-import 'package:blocx_test/routes/app_router.dart';
+    appFile.writeAsStringSync('''
+import 'core/themes/app_theme.dart';
+import 'routes/app_pages.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => HomeBloc())],
-      child: MaterialApp.router(
-        title: 'Enter your app name',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
-        routerConfig: AppRouter.router,
-      ),
+    return MaterialApp.router(
+      title: 'Flutter App',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      routerConfig: router,
     );
   }
 }
 ''');
+  }
+
+  void updateTestFiles(String projectDir) {
+    print('🧪 Updating test files...');
+    final testDir = path.join(projectDir, 'test');
+
+    // Update widget_test.dart if it exists
+    final widgetTestFile = File(path.join(testDir, 'widget_test.dart'));
+    if (widgetTestFile.existsSync()) {
+      var content = widgetTestFile.readAsStringSync();
+
+      // Add import for app.dart if not already present
+      if (!content.contains("import '../lib/app.dart'")) {
+        // Find where to insert the import
+        final importIndex = content.lastIndexOf("import ");
+        final endOfImportLine = content.indexOf(';', importIndex) + 1;
+
+        final newImport = "\nimport '../lib/app.dart';";
+        content = content.substring(0, endOfImportLine) +
+            newImport +
+            content.substring(endOfImportLine);
+
+        // Replace any references to MyApp with the correct import
+        content = content.replaceAll("import '../lib/main.dart';",
+            "import '../lib/main.dart';\nimport '../lib/app.dart';");
+
+        widgetTestFile.writeAsStringSync(content);
+        print('Updated widget_test.dart with app.dart import');
+      }
+    } else {
+      print('No widget_test.dart found, skipping test file updates');
     }
   }
 
@@ -305,5 +355,10 @@ class MyApp extends StatelessWidget {
   void printSuccess(String message) {
     final pen = AnsiPen()..green();
     print(pen(message));
+  }
+
+  void printWarning(String message) {
+    final pen = AnsiPen()..yellow();
+    print(pen('⚠️ $message'));
   }
 }

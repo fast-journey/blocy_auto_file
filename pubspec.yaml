@@ -3,7 +3,7 @@ name: blocy
 description: A CLI tool for setting up Flutter projects with BLoC architecture
 homepage: https://github.com/joysarkar18/blocy
 repository: https://github.com/joysarkar18/blocy
-version: 1.0.1
+version: 1.0.8
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
@@ -16,4 +16,4 @@ dependencies:
   ansicolor: ^2.0.1
 
 executables:
-  blocx: blocx
+  blocy: blocy
