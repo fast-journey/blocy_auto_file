@@ -33,3 +33,7 @@
 ## 1.0.8
 
 - Update of code generation.
+
+## 1.0.9
+
+- Updated Documentation

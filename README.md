@@ -1,6 +1,6 @@
 # BlocY CLI
 
-A powerful command-line tool to quickly scaffold Flutter applications using BLoC architecture with clean architecture principles.
+Build Flutter apps faster with a CLI tool that applies BLoC and clean architecture for scalable, maintainable projects.
 
 ## Features
 
@@ -136,7 +136,7 @@ After creating a feature, you'll have a fully functional architecture to work wi
 
 ## Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check [issues page](https://github.com/yourusername/blocy_cli/issues).
+Contributions, issues, and feature requests are welcome! Feel free to check [issues page](https://github.com/joysarkar18/blocy/issues).
 
 ## License
 
