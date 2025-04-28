@@ -1,8 +1,8 @@
 // File: pubspec.yaml
 name: blocy
 description: A CLI tool for setting up Flutter projects with BLoC architecture
-homepage: https://github.com/yourusername/your-package
-repository: https://github.com/yourusername/your-package
+homepage: https://github.com/joysarkar18/blocy
+repository: https://github.com/joysarkar18/blocy
 version: 1.0.1
 environment:
   sdk: ">=3.0.0 <4.0.0"
