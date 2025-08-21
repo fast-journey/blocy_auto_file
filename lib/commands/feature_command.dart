@@ -348,11 +348,12 @@ class ${classNamePrefix}Model {
     if (!datasourceFile.existsSync()) {
       datasourceFile.writeAsStringSync('''
 import 'package:$packageName/features/$featureName/data/models/${snakeCaseName}_model.dart';
-
+import 'package:injectable/injectable.dart';
 abstract class ${classNamePrefix}Datasource {
   Future<${classNamePrefix}Model> get$classNamePrefix();
 }
 
+@LazySingleton(as: ${classNamePrefix}Datasource)
 class ${classNamePrefix}DatasourceImpl implements ${classNamePrefix}Datasource {
   @override
   Future<${classNamePrefix}Model> get$classNamePrefix() async {
