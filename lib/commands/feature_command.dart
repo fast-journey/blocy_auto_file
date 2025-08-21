@@ -235,11 +235,14 @@ abstract class ${classNamePrefix}Repository {
     if (!repositoryImplFile.existsSync()) {
       repositoryImplFile.writeAsStringSync('''
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
+
 import 'package:$packageName/core/error/failures.dart';
 import 'package:$packageName/features/$featureName/data/datasources/${snakeCaseName}_datasource.dart';
 import 'package:$packageName/features/$featureName/domain/entities/$snakeCaseName.dart';
 import 'package:$packageName/features/$featureName/domain/repositories/${snakeCaseName}_repository.dart';
 
+@LazySingleton(as: ${classNamePrefix}Repository)
 class ${classNamePrefix}RepositoryImpl implements ${classNamePrefix}Repository {
   final ${classNamePrefix}Datasource datasource;
 
